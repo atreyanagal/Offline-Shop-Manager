@@ -106,8 +106,7 @@ class _TodoAppState extends State<TodoApp> {
                   Color textColor = Colors.black;
                   if (todos[index].dueDate != null) {
                     DateTime now = DateTime.now();
-                    Duration difference =
-                        todos[index].dueDate!.difference(now);
+                    Duration difference = todos[index].dueDate!.difference(now);
                     if (difference.inDays < 0) {
                       // Due date is passed
                       textColor = Colors.red;
@@ -152,8 +151,7 @@ class _TodoAppState extends State<TodoApp> {
                                     context: context,
                                     initialDate: DateTime.now(),
                                     firstDate: DateTime.now(),
-                                    lastDate:
-                                        DateTime(DateTime.now().year + 5),
+                                    lastDate: DateTime(DateTime.now().year + 5),
                                   );
                                   if (selectedDate != null) {
                                     setState(() {
@@ -185,8 +183,7 @@ class _TodoAppState extends State<TodoApp> {
                                           SizedBox(height: 8),
                                           TextField(
                                             controller: TextEditingController(
-                                                text: todos[index]
-                                                    .description),
+                                                text: todos[index].description),
                                             onChanged: (value) {
                                               todos[index].description = value;
                                             },
@@ -219,10 +216,13 @@ class _TodoAppState extends State<TodoApp> {
                                 },
                               ),
                               IconButton(
-                                icon: Icon(Icons.add),
+                                icon: Icon(Icons.remove),
                                 onPressed: () {
                                   setState(() {
-                                    todos[index].quantity++;
+                                    todos[index].quantity =
+                                        todos[index].quantity > 0
+                                            ? todos[index].quantity - 1
+                                            : 0;
                                   });
                                 },
                               ),
@@ -232,13 +232,10 @@ class _TodoAppState extends State<TodoApp> {
                               ),
                               SizedBox(width: 8),
                               IconButton(
-                                icon: Icon(Icons.remove),
+                                icon: Icon(Icons.add),
                                 onPressed: () {
                                   setState(() {
-                                    todos[index].quantity =
-                                        todos[index].quantity > 0
-                                            ? todos[index].quantity - 1
-                                            : 0;
+                                    todos[index].quantity++;
                                   });
                                 },
                               ),
