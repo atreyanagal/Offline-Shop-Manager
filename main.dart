@@ -41,7 +41,8 @@ class _TodoAppState extends State<TodoApp> {
       theme: isDarkTheme ? ThemeData.dark() : ThemeData.light(),
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Todo App'),
+          title: Text('Offline Shop Manager App'),
+          centerTitle: true,
         ),
         body: Column(
           children: [
@@ -119,6 +120,14 @@ class _TodoAppState extends State<TodoApp> {
                     }
                   }
 
+                  Color quantityColor = Colors.green;
+                  if (todos[index].quantity == 0) {
+                    quantityColor = Colors.red;
+                  } else if (todos[index].quantity > 0 &&
+                      todos[index].quantity <= 10) {
+                    quantityColor = Colors.yellow;
+                  }
+
                   return Card(
                     child: ListTile(
                       title: Text(
@@ -128,9 +137,22 @@ class _TodoAppState extends State<TodoApp> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text('Description: ${todos[index].description}'),
-                          Text('Quantity: ${todos[index].quantity}'),
                           Text(
-                              'Created at: ${_formatDate(todos[index].createdAt)}'),
+                            'Quantity: ',
+                            style: TextStyle(
+                              color: quantityColor,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            todos[index].quantity.toString(),
+                            style: TextStyle(
+                              color: quantityColor,
+                            ),
+                          ),
+                          Text(
+                            'Created at: ${_formatDate(todos[index].createdAt)}',
+                          ),
                           Text(
                             todos[index].dueDate != null
                                 ? 'Exp Date: ${_formatDate(todos[index].dueDate!)}'
@@ -189,6 +211,21 @@ class _TodoAppState extends State<TodoApp> {
                                             },
                                             decoration: InputDecoration(
                                               labelText: 'Description',
+                                            ),
+                                          ),
+                                          SizedBox(height: 8),
+                                          TextField(
+                                            controller: TextEditingController(
+                                                text: todos[index]
+                                                    .quantity
+                                                    .toString()),
+                                            onChanged: (value) {
+                                              todos[index].quantity =
+                                                  int.parse(value);
+                                            },
+                                            keyboardType: TextInputType.number,
+                                            decoration: InputDecoration(
+                                              labelText: 'Quantity',
                                             ),
                                           ),
                                         ],
