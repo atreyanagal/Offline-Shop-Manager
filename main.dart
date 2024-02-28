@@ -8,16 +8,16 @@ class Todo {
   String title;
   String description;
   int quantity;
-  double cost; // Added cost field
+  double cost;
   bool isDone;
   DateTime createdAt;
-  DateTime? dueDate; // Nullable DateTime for due date
+  DateTime? dueDate;
 
   Todo({
     required this.title,
     required this.description,
     required this.quantity,
-    required this.cost, // Initialize cost
+    required this.cost,
     this.isDone = false,
     required this.createdAt,
     this.dueDate,
@@ -35,8 +35,7 @@ class _TodoAppState extends State<TodoApp> {
   TextEditingController titleController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
   TextEditingController quantityController = TextEditingController();
-  TextEditingController costController =
-      TextEditingController(); // Controller for cost field
+  TextEditingController costController = TextEditingController();
   bool isDarkTheme = false;
 
   @override
@@ -84,12 +83,11 @@ class _TodoAppState extends State<TodoApp> {
                       ),
                       SizedBox(width: 8),
                       Expanded(
-                        // Added expanded widget for cost input
                         child: TextField(
                           controller: costController,
                           keyboardType: TextInputType.numberWithOptions(
-                              decimal:
-                                  true), // Allowing decimal values for cost
+                            decimal: true,
+                          ),
                           decoration: InputDecoration(
                             labelText: 'Cost',
                             border: OutlineInputBorder(),
@@ -104,15 +102,13 @@ class _TodoAppState extends State<TodoApp> {
                               title: titleController.text,
                               description: descriptionController.text,
                               quantity: int.parse(quantityController.text),
-                              cost: double.parse(costController
-                                  .text), // Getting cost value from the controller
+                              cost: double.parse(costController.text),
                               createdAt: DateTime.now(),
                             ));
                             titleController.clear();
                             descriptionController.clear();
                             quantityController.clear();
-                            costController
-                                .clear(); // Clearing the cost controller
+                            costController.clear();
                           });
                         },
                         child: Text('Add'),
@@ -126,18 +122,17 @@ class _TodoAppState extends State<TodoApp> {
               child: ListView.builder(
                 itemCount: todos.length,
                 itemBuilder: (context, index) {
+                  double totalWorth = todos[index].quantity * todos[index].cost;
+
                   Color textColor = Colors.black;
                   if (todos[index].dueDate != null) {
                     DateTime now = DateTime.now();
                     Duration difference = todos[index].dueDate!.difference(now);
                     if (difference.inDays < 0) {
-                      // Due date is passed
                       textColor = Colors.red;
                     } else if (difference.inDays <= 30) {
-                      // Due date is within one month
                       textColor = Colors.yellow;
                     } else {
-                      // Due date is more than one month away
                       textColor = Colors.green;
                     }
                   }
@@ -152,9 +147,7 @@ class _TodoAppState extends State<TodoApp> {
 
                   return Card(
                     child: ListTile(
-                      title: Text(
-                        todos[index].title,
-                      ),
+                      title: Text(todos[index].title),
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -179,9 +172,12 @@ class _TodoAppState extends State<TodoApp> {
                           Row(
                             children: [
                               Text(
-                                'Cost: \₹${todos[index].cost.toStringAsFixed(2)}', // Displaying cost with 2 decimal places
+                                'Cost: \₹${todos[index].cost.toStringAsFixed(2)}',
                               ),
                             ],
+                          ),
+                          Text(
+                            'Total worth: \₹${totalWorth.toStringAsFixed(2)}',
                           ),
                           Text(
                             'Created at: ${_formatDate(todos[index].createdAt)}',
@@ -227,7 +223,8 @@ class _TodoAppState extends State<TodoApp> {
                                         children: [
                                           TextField(
                                             controller: TextEditingController(
-                                                text: todos[index].title),
+                                              text: todos[index].title,
+                                            ),
                                             onChanged: (value) {
                                               todos[index].title = value;
                                             },
@@ -238,7 +235,8 @@ class _TodoAppState extends State<TodoApp> {
                                           SizedBox(height: 8),
                                           TextField(
                                             controller: TextEditingController(
-                                                text: todos[index].description),
+                                              text: todos[index].description,
+                                            ),
                                             onChanged: (value) {
                                               todos[index].description = value;
                                             },
@@ -249,9 +247,10 @@ class _TodoAppState extends State<TodoApp> {
                                           SizedBox(height: 8),
                                           TextField(
                                             controller: TextEditingController(
-                                                text: todos[index]
-                                                    .quantity
-                                                    .toString()),
+                                              text: todos[index]
+                                                  .quantity
+                                                  .toString(),
+                                            ),
                                             onChanged: (value) {
                                               todos[index].quantity =
                                                   int.parse(value);
@@ -264,9 +263,9 @@ class _TodoAppState extends State<TodoApp> {
                                           SizedBox(height: 8),
                                           TextField(
                                             controller: TextEditingController(
-                                                text: todos[index]
-                                                    .cost
-                                                    .toString()),
+                                              text:
+                                                  todos[index].cost.toString(),
+                                            ),
                                             onChanged: (value) {
                                               todos[index].cost =
                                                   double.parse(value);
