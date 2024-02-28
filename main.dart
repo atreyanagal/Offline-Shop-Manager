@@ -40,6 +40,9 @@ class _TodoAppState extends State<TodoApp> {
 
   @override
   Widget build(BuildContext context) {
+    double netWorth =
+        todos.fold(0, (sum, todo) => sum + todo.quantity * todo.cost);
+
     return MaterialApp(
       theme: isDarkTheme ? ThemeData.dark() : ThemeData.light(),
       home: Scaffold(
@@ -311,9 +314,7 @@ class _TodoAppState extends State<TodoApp> {
                                 },
                               ),
                               SizedBox(width: 8),
-                              Text(
-                                todos[index].quantity.toString(),
-                              ),
+                              Text(todos[index].quantity.toString()),
                               SizedBox(width: 8),
                               IconButton(
                                 icon: Icon(Icons.add),
@@ -362,6 +363,10 @@ class _TodoAppState extends State<TodoApp> {
                   );
                 },
               ),
+            ),
+            Text(
+              'Net worth of shop: \₹${netWorth.toStringAsFixed(2)}',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
           ],
         ),
