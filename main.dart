@@ -36,12 +36,21 @@ class _TodoAppState extends State<TodoApp> {
   TextEditingController descriptionController = TextEditingController();
   TextEditingController quantityController = TextEditingController();
   TextEditingController costController = TextEditingController();
+  TextEditingController searchController =
+      TextEditingController(); // Added search controller
   bool isDarkTheme = false;
 
   @override
   Widget build(BuildContext context) {
     double netWorth =
         todos.fold(0, (sum, todo) => sum + todo.quantity * todo.cost);
+
+    // Filtered todos based on search query
+    List<Todo> filteredTodos = todos
+        .where((todo) => todo.title
+            .toLowerCase()
+            .contains(searchController.text.toLowerCase()))
+        .toList();
 
     return MaterialApp(
       theme: isDarkTheme ? ThemeData.dark() : ThemeData.light(),
@@ -121,16 +130,33 @@ class _TodoAppState extends State<TodoApp> {
                 ],
               ),
             ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                controller: searchController,
+                onChanged: (value) {
+                  setState(
+                      () {}); // To trigger the rebuild when search query changes
+                },
+                decoration: InputDecoration(
+                  labelText: 'Search',
+                  prefixIcon: Icon(Icons.search),
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ),
             Expanded(
               child: ListView.builder(
-                itemCount: todos.length,
+                itemCount: filteredTodos.length,
                 itemBuilder: (context, index) {
-                  double totalWorth = todos[index].quantity * todos[index].cost;
+                  double totalWorth =
+                      filteredTodos[index].quantity * filteredTodos[index].cost;
 
                   Color textColor = Colors.black;
-                  if (todos[index].dueDate != null) {
+                  if (filteredTodos[index].dueDate != null) {
                     DateTime now = DateTime.now();
-                    Duration difference = todos[index].dueDate!.difference(now);
+                    Duration difference =
+                        filteredTodos[index].dueDate!.difference(now);
                     if (difference.inDays < 0) {
                       textColor = Colors.red;
                     } else if (difference.inDays <= 30) {
@@ -141,20 +167,21 @@ class _TodoAppState extends State<TodoApp> {
                   }
 
                   Color quantityColor = Colors.green;
-                  if (todos[index].quantity == 0) {
+                  if (filteredTodos[index].quantity == 0) {
                     quantityColor = Colors.red;
-                  } else if (todos[index].quantity > 0 &&
-                      todos[index].quantity <= 10) {
+                  } else if (filteredTodos[index].quantity > 0 &&
+                      filteredTodos[index].quantity <= 10) {
                     quantityColor = Colors.yellow;
                   }
 
                   return Card(
                     child: ListTile(
-                      title: Text(todos[index].title),
+                      title: Text(filteredTodos[index].title),
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Description: ${todos[index].description}'),
+                          Text(
+                              'Description: ${filteredTodos[index].description}'),
                           Row(
                             children: [
                               Text(
@@ -165,7 +192,7 @@ class _TodoAppState extends State<TodoApp> {
                                 ),
                               ),
                               Text(
-                                todos[index].quantity.toString(),
+                                filteredTodos[index].quantity.toString(),
                                 style: TextStyle(
                                   color: quantityColor,
                                 ),
@@ -175,19 +202,19 @@ class _TodoAppState extends State<TodoApp> {
                           Row(
                             children: [
                               Text(
-                                'Cost: \₹${todos[index].cost.toStringAsFixed(2)}',
+                                'Cost: \$${filteredTodos[index].cost.toStringAsFixed(2)}',
                               ),
                             ],
                           ),
                           Text(
-                            'Total worth: \₹${totalWorth.toStringAsFixed(2)}',
+                            'Total worth: \$${totalWorth.toStringAsFixed(2)}',
                           ),
                           Text(
-                            'Created at: ${_formatDate(todos[index].createdAt)}',
+                            'Created at: ${_formatDate(filteredTodos[index].createdAt)}',
                           ),
                           Text(
-                            todos[index].dueDate != null
-                                ? 'Exp Date: ${_formatDate(todos[index].dueDate!)}'
+                            filteredTodos[index].dueDate != null
+                                ? 'Exp Date: ${_formatDate(filteredTodos[index].dueDate!)}'
                                 : 'No Exp Date',
                             style: TextStyle(color: textColor),
                           ),
@@ -209,7 +236,8 @@ class _TodoAppState extends State<TodoApp> {
                                   );
                                   if (selectedDate != null) {
                                     setState(() {
-                                      todos[index].dueDate = selectedDate;
+                                      filteredTodos[index].dueDate =
+                                          selectedDate;
                                     });
                                   }
                                 },
@@ -226,10 +254,11 @@ class _TodoAppState extends State<TodoApp> {
                                         children: [
                                           TextField(
                                             controller: TextEditingController(
-                                              text: todos[index].title,
+                                              text: filteredTodos[index].title,
                                             ),
                                             onChanged: (value) {
-                                              todos[index].title = value;
+                                              filteredTodos[index].title =
+                                                  value;
                                             },
                                             decoration: InputDecoration(
                                               labelText: 'Title',
@@ -238,10 +267,12 @@ class _TodoAppState extends State<TodoApp> {
                                           SizedBox(height: 8),
                                           TextField(
                                             controller: TextEditingController(
-                                              text: todos[index].description,
+                                              text: filteredTodos[index]
+                                                  .description,
                                             ),
                                             onChanged: (value) {
-                                              todos[index].description = value;
+                                              filteredTodos[index].description =
+                                                  value;
                                             },
                                             decoration: InputDecoration(
                                               labelText: 'Description',
@@ -250,12 +281,12 @@ class _TodoAppState extends State<TodoApp> {
                                           SizedBox(height: 8),
                                           TextField(
                                             controller: TextEditingController(
-                                              text: todos[index]
+                                              text: filteredTodos[index]
                                                   .quantity
                                                   .toString(),
                                             ),
                                             onChanged: (value) {
-                                              todos[index].quantity =
+                                              filteredTodos[index].quantity =
                                                   int.parse(value);
                                             },
                                             keyboardType: TextInputType.number,
@@ -266,11 +297,12 @@ class _TodoAppState extends State<TodoApp> {
                                           SizedBox(height: 8),
                                           TextField(
                                             controller: TextEditingController(
-                                              text:
-                                                  todos[index].cost.toString(),
+                                              text: filteredTodos[index]
+                                                  .cost
+                                                  .toString(),
                                             ),
                                             onChanged: (value) {
-                                              todos[index].cost =
+                                              filteredTodos[index].cost =
                                                   double.parse(value);
                                             },
                                             keyboardType: TextInputType.number,
@@ -306,21 +338,21 @@ class _TodoAppState extends State<TodoApp> {
                                 icon: Icon(Icons.remove),
                                 onPressed: () {
                                   setState(() {
-                                    todos[index].quantity =
-                                        todos[index].quantity > 0
-                                            ? todos[index].quantity - 1
+                                    filteredTodos[index].quantity =
+                                        filteredTodos[index].quantity > 0
+                                            ? filteredTodos[index].quantity - 1
                                             : 0;
                                   });
                                 },
                               ),
                               SizedBox(width: 8),
-                              Text(todos[index].quantity.toString()),
+                              Text(filteredTodos[index].quantity.toString()),
                               SizedBox(width: 8),
                               IconButton(
                                 icon: Icon(Icons.add),
                                 onPressed: () {
                                   setState(() {
-                                    todos[index].quantity++;
+                                    filteredTodos[index].quantity++;
                                   });
                                 },
                               ),
@@ -330,7 +362,8 @@ class _TodoAppState extends State<TodoApp> {
                       ),
                       onTap: () {
                         setState(() {
-                          todos[index].isDone = !todos[index].isDone;
+                          filteredTodos[index].isDone =
+                              !filteredTodos[index].isDone;
                         });
                       },
                       onLongPress: () {
@@ -343,7 +376,7 @@ class _TodoAppState extends State<TodoApp> {
                               TextButton(
                                 onPressed: () {
                                   setState(() {
-                                    todos.removeAt(index);
+                                    filteredTodos.removeAt(index);
                                     Navigator.of(context).pop();
                                   });
                                 },
