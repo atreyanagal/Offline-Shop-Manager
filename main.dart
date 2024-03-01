@@ -156,276 +156,296 @@ class _TodoAppState extends State<TodoApp> {
               ),
             ),
             Expanded(
-              child: ListView.builder(
-                itemCount: filteredTodos.length,
-                itemBuilder: (context, index) {
-                  double totalWorth =
-                      filteredTodos[index].quantity * filteredTodos[index].cost;
-
-                  Color textColor = Colors.black;
-                  if (filteredTodos[index].dueDate != null) {
-                    DateTime now = DateTime.now();
-                    Duration difference =
-                        filteredTodos[index].dueDate!.difference(now);
-                    if (difference.inDays < 0) {
-                      textColor = Colors.red;
-                    } else if (difference.inDays <= 30) {
-                      textColor = Colors.yellow;
-                    } else {
-                      textColor = Colors.green;
-                    }
-                  }
-
-                  Color quantityColor = Colors.green;
-                  if (filteredTodos[index].quantity == 0) {
-                    quantityColor = Colors.red;
-                  } else if (filteredTodos[index].quantity > 0 &&
-                      filteredTodos[index].quantity <= 10) {
-                    quantityColor = Colors.yellow;
-                  }
-
-                  return Card(
-                    child: ListTile(
-                      title: Text(filteredTodos[index].title),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                              'Description: ${filteredTodos[index].description}'),
-                          Text('Category: ${filteredTodos[index].category}'),
-                          Row(
-                            children: [
-                              Text(
-                                'Quantity: ',
-                                style: TextStyle(
-                                  color: quantityColor,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Text(
-                                filteredTodos[index].quantity.toString(),
-                                style: TextStyle(
-                                  color: quantityColor,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Text(
-                                'Cost: \₹${filteredTodos[index].cost.toStringAsFixed(2)}',
-                              ),
-                            ],
-                          ),
-                          Text(
-                            'Total worth: \₹${totalWorth.toStringAsFixed(2)}',
-                          ),
-                          Text(
-                            'Created at: ${_formatDate(filteredTodos[index].createdAt)}',
-                          ),
-                          Text(
-                            filteredTodos[index].dueDate != null
-                                ? 'Exp Date: ${_formatDate(filteredTodos[index].dueDate!)}'
-                                : 'No Exp Date',
-                            style: TextStyle(color: textColor),
-                          ),
-                        ],
+              child: filteredTodos.isEmpty
+                  ? Center(
+                      child: Text(
+                        'No search results found, Try again!!',
+                        style: TextStyle(fontSize: 18),
                       ),
-                      trailing: Column(
-                        children: [
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                                icon: Icon(Icons.calendar_today),
-                                onPressed: () async {
-                                  final selectedDate = await showDatePicker(
-                                    context: context,
-                                    initialDate: DateTime.now(),
-                                    firstDate: DateTime.now(),
-                                    lastDate: DateTime(DateTime.now().year + 5),
-                                  );
-                                  if (selectedDate != null) {
-                                    setState(() {
-                                      filteredTodos[index].dueDate =
-                                          selectedDate;
-                                    });
-                                  }
-                                },
-                              ),
-                              IconButton(
-                                icon: Icon(Icons.edit),
-                                onPressed: () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) => AlertDialog(
-                                      title: Text('Edit Todo'),
-                                      content: SingleChildScrollView(
-                                        // Make the content scrollable
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            TextField(
-                                              controller: TextEditingController(
-                                                text:
-                                                    filteredTodos[index].title,
-                                              ),
-                                              onChanged: (value) {
-                                                filteredTodos[index].title =
-                                                    value;
-                                              },
-                                              decoration: InputDecoration(
-                                                labelText: 'Title',
-                                              ),
-                                            ),
-                                            SizedBox(height: 8),
-                                            TextField(
-                                              controller: TextEditingController(
-                                                text: filteredTodos[index]
-                                                    .description,
-                                              ),
-                                              onChanged: (value) {
-                                                filteredTodos[index]
-                                                    .description = value;
-                                              },
-                                              decoration: InputDecoration(
-                                                labelText: 'Description',
-                                              ),
-                                            ),
-                                            SizedBox(height: 8),
-                                            TextField(
-                                              controller: TextEditingController(
-                                                text: filteredTodos[index]
-                                                    .category,
-                                              ),
-                                              onChanged: (value) {
-                                                filteredTodos[index].category =
-                                                    value;
-                                              },
-                                              decoration: InputDecoration(
-                                                labelText: 'Category',
-                                              ),
-                                            ),
-                                            SizedBox(height: 8),
-                                            TextField(
-                                              controller: TextEditingController(
-                                                text: filteredTodos[index]
-                                                    .quantity
-                                                    .toString(),
-                                              ),
-                                              onChanged: (value) {
-                                                filteredTodos[index].quantity =
-                                                    int.parse(value);
-                                              },
-                                              keyboardType:
-                                                  TextInputType.number,
-                                              decoration: InputDecoration(
-                                                labelText: 'Quantity',
-                                              ),
-                                            ),
-                                            SizedBox(height: 8),
-                                            TextField(
-                                              controller: TextEditingController(
-                                                text: filteredTodos[index]
-                                                    .cost
-                                                    .toString(),
-                                              ),
-                                              onChanged: (value) {
-                                                filteredTodos[index].cost =
-                                                    double.parse(value);
-                                              },
-                                              keyboardType:
-                                                  TextInputType.number,
-                                              decoration: InputDecoration(
-                                                labelText: 'Cost',
-                                              ),
-                                            ),
-                                          ],
-                                        ),
+                    )
+                  : ListView.builder(
+                      itemCount: filteredTodos.length,
+                      itemBuilder: (context, index) {
+                        double totalWorth = filteredTodos[index].quantity *
+                            filteredTodos[index].cost;
+
+                        Color textColor = Colors.black;
+                        if (filteredTodos[index].dueDate != null) {
+                          DateTime now = DateTime.now();
+                          Duration difference =
+                              filteredTodos[index].dueDate!.difference(now);
+                          if (difference.inDays < 0) {
+                            textColor = Colors.red;
+                          } else if (difference.inDays <= 30) {
+                            textColor = Colors.yellow;
+                          } else {
+                            textColor = Colors.green;
+                          }
+                        }
+
+                        Color quantityColor = Colors.green;
+                        if (filteredTodos[index].quantity == 0) {
+                          quantityColor = Colors.red;
+                        } else if (filteredTodos[index].quantity > 0 &&
+                            filteredTodos[index].quantity <= 10) {
+                          quantityColor = Colors.yellow;
+                        }
+
+                        return Card(
+                          child: ListTile(
+                            title: Text(filteredTodos[index].title),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                    'Description: ${filteredTodos[index].description}'),
+                                Text(
+                                    'Category: ${filteredTodos[index].category}'),
+                                Row(
+                                  children: [
+                                    Text(
+                                      'Quantity: ',
+                                      style: TextStyle(
+                                        color: quantityColor,
+                                        fontWeight: FontWeight.bold,
                                       ),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              Navigator.of(context).pop();
-                                            });
-                                          },
-                                          child: Text('Cancel'),
-                                        ),
-                                        TextButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              Navigator.of(context).pop();
-                                            });
-                                          },
-                                          child: Text('Save'),
-                                        ),
-                                      ],
                                     ),
-                                  );
-                                },
-                              ),
-                              IconButton(
-                                icon: Icon(Icons.remove),
-                                onPressed: () {
-                                  setState(() {
-                                    todos.remove(filteredTodos[
-                                        index]); // Remove from todos list
-                                  });
-                                },
-                              ),
-                              SizedBox(width: 8),
-                              Text(filteredTodos[index].quantity.toString()),
-                              SizedBox(width: 8),
-                              IconButton(
-                                icon: Icon(Icons.add),
-                                onPressed: () {
-                                  setState(() {
-                                    filteredTodos[index].quantity++;
-                                  });
-                                },
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      onTap: () {
-                        setState(() {
-                          filteredTodos[index].isDone =
-                              !filteredTodos[index].isDone;
-                        });
-                      },
-                      onLongPress: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                            title: Text('Delete Todo'),
-                            content: Text('Do you want to delete this todo?'),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  setState(() {
-                                    todos.remove(filteredTodos[
-                                        index]); // Remove from todos list
-                                    Navigator.of(context).pop();
-                                  });
-                                },
-                                child: Text('Yes'),
-                              ),
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: Text('No'),
-                              ),
-                            ],
+                                    Text(
+                                      filteredTodos[index].quantity.toString(),
+                                      style: TextStyle(
+                                        color: quantityColor,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    Text(
+                                      'Cost: \₹${filteredTodos[index].cost.toStringAsFixed(2)}',
+                                    ),
+                                  ],
+                                ),
+                                Text(
+                                  'Total worth: \₹${totalWorth.toStringAsFixed(2)}',
+                                ),
+                                Text(
+                                  'Created at: ${_formatDate(filteredTodos[index].createdAt)}',
+                                ),
+                                Text(
+                                  filteredTodos[index].dueDate != null
+                                      ? 'Exp Date: ${_formatDate(filteredTodos[index].dueDate!)}'
+                                      : 'No Exp Date',
+                                  style: TextStyle(color: textColor),
+                                ),
+                              ],
+                            ),
+                            trailing: Column(
+                              children: [
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    IconButton(
+                                      icon: Icon(Icons.calendar_today),
+                                      onPressed: () async {
+                                        final selectedDate =
+                                            await showDatePicker(
+                                          context: context,
+                                          initialDate: DateTime.now(),
+                                          firstDate: DateTime.now(),
+                                          lastDate:
+                                              DateTime(DateTime.now().year + 5),
+                                        );
+                                        if (selectedDate != null) {
+                                          setState(() {
+                                            filteredTodos[index].dueDate =
+                                                selectedDate;
+                                          });
+                                        }
+                                      },
+                                    ),
+                                    IconButton(
+                                      icon: Icon(Icons.edit),
+                                      onPressed: () {
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) => AlertDialog(
+                                            title: Text('Edit Todo'),
+                                            content: SingleChildScrollView(
+                                              // Make the content scrollable
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  TextField(
+                                                    controller:
+                                                        TextEditingController(
+                                                      text: filteredTodos[index]
+                                                          .title,
+                                                    ),
+                                                    onChanged: (value) {
+                                                      filteredTodos[index]
+                                                          .title = value;
+                                                    },
+                                                    decoration: InputDecoration(
+                                                      labelText: 'Title',
+                                                    ),
+                                                  ),
+                                                  SizedBox(height: 8),
+                                                  TextField(
+                                                    controller:
+                                                        TextEditingController(
+                                                      text: filteredTodos[index]
+                                                          .description,
+                                                    ),
+                                                    onChanged: (value) {
+                                                      filteredTodos[index]
+                                                          .description = value;
+                                                    },
+                                                    decoration: InputDecoration(
+                                                      labelText: 'Description',
+                                                    ),
+                                                  ),
+                                                  SizedBox(height: 8),
+                                                  TextField(
+                                                    controller:
+                                                        TextEditingController(
+                                                      text: filteredTodos[index]
+                                                          .category,
+                                                    ),
+                                                    onChanged: (value) {
+                                                      filteredTodos[index]
+                                                          .category = value;
+                                                    },
+                                                    decoration: InputDecoration(
+                                                      labelText: 'Category',
+                                                    ),
+                                                  ),
+                                                  SizedBox(height: 8),
+                                                  TextField(
+                                                    controller:
+                                                        TextEditingController(
+                                                      text: filteredTodos[index]
+                                                          .quantity
+                                                          .toString(),
+                                                    ),
+                                                    onChanged: (value) {
+                                                      filteredTodos[index]
+                                                              .quantity =
+                                                          int.parse(value);
+                                                    },
+                                                    keyboardType:
+                                                        TextInputType.number,
+                                                    decoration: InputDecoration(
+                                                      labelText: 'Quantity',
+                                                    ),
+                                                  ),
+                                                  SizedBox(height: 8),
+                                                  TextField(
+                                                    controller:
+                                                        TextEditingController(
+                                                      text: filteredTodos[index]
+                                                          .cost
+                                                          .toString(),
+                                                    ),
+                                                    onChanged: (value) {
+                                                      filteredTodos[index]
+                                                              .cost =
+                                                          double.parse(value);
+                                                    },
+                                                    keyboardType:
+                                                        TextInputType.number,
+                                                    decoration: InputDecoration(
+                                                      labelText: 'Cost',
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            actions: [
+                                              TextButton(
+                                                onPressed: () {
+                                                  setState(() {
+                                                    Navigator.of(context).pop();
+                                                  });
+                                                },
+                                                child: Text('Cancel'),
+                                              ),
+                                              TextButton(
+                                                onPressed: () {
+                                                  setState(() {
+                                                    Navigator.of(context).pop();
+                                                  });
+                                                },
+                                                child: Text('Save'),
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                    IconButton(
+                                      icon: Icon(Icons.remove),
+                                      onPressed: () {
+                                        setState(() {
+                                          todos.remove(filteredTodos[
+                                              index]); // Remove from todos list
+                                        });
+                                      },
+                                    ),
+                                    SizedBox(width: 8),
+                                    Text(filteredTodos[index]
+                                        .quantity
+                                        .toString()),
+                                    SizedBox(width: 8),
+                                    IconButton(
+                                      icon: Icon(Icons.add),
+                                      onPressed: () {
+                                        setState(() {
+                                          filteredTodos[index].quantity++;
+                                        });
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            onTap: () {
+                              setState(() {
+                                filteredTodos[index].isDone =
+                                    !filteredTodos[index].isDone;
+                              });
+                            },
+                            onLongPress: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: Text('Delete Todo'),
+                                  content:
+                                      Text('Do you want to delete this todo?'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          todos.remove(filteredTodos[
+                                              index]); // Remove from todos list
+                                          Navigator.of(context).pop();
+                                        });
+                                      },
+                                      child: Text('Yes'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: Text('No'),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
                           ),
                         );
                       },
                     ),
-                  );
-                },
-              ),
             ),
             Text(
               'Net worth of shop: \₹${netWorth.toStringAsFixed(2)}',
