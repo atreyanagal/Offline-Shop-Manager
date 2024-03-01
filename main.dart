@@ -202,12 +202,12 @@ class _TodoAppState extends State<TodoApp> {
                           Row(
                             children: [
                               Text(
-                                'Cost: \$${filteredTodos[index].cost.toStringAsFixed(2)}',
+                                'Cost: \₹${filteredTodos[index].cost.toStringAsFixed(2)}',
                               ),
                             ],
                           ),
                           Text(
-                            'Total worth: \$${totalWorth.toStringAsFixed(2)}',
+                            'Total worth: \₹${totalWorth.toStringAsFixed(2)}',
                           ),
                           Text(
                             'Created at: ${_formatDate(filteredTodos[index].createdAt)}',
