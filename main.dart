@@ -7,6 +7,7 @@ void main() {
 class Todo {
   String title;
   String description;
+  String category;
   int quantity;
   double cost;
   bool isDone;
@@ -16,6 +17,7 @@ class Todo {
   Todo({
     required this.title,
     required this.description,
+    required this.category,
     required this.quantity,
     required this.cost,
     this.isDone = false,
@@ -34,10 +36,10 @@ class _TodoAppState extends State<TodoApp> {
 
   TextEditingController titleController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
+  TextEditingController categoryController = TextEditingController();
   TextEditingController quantityController = TextEditingController();
   TextEditingController costController = TextEditingController();
-  TextEditingController searchController =
-      TextEditingController(); // Added search controller
+  TextEditingController searchController = TextEditingController();
   bool isDarkTheme = false;
 
   @override
@@ -45,7 +47,6 @@ class _TodoAppState extends State<TodoApp> {
     double netWorth =
         todos.fold(0, (sum, todo) => sum + todo.quantity * todo.cost);
 
-    // Filtered todos based on search query
     List<Todo> filteredTodos = todos
         .where((todo) => todo.title
             .toLowerCase()
@@ -77,6 +78,14 @@ class _TodoAppState extends State<TodoApp> {
                     controller: descriptionController,
                     decoration: InputDecoration(
                       labelText: 'Description',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  TextField(
+                    controller: categoryController,
+                    decoration: InputDecoration(
+                      labelText: 'Category',
                       border: OutlineInputBorder(),
                     ),
                   ),
@@ -113,12 +122,14 @@ class _TodoAppState extends State<TodoApp> {
                             todos.add(Todo(
                               title: titleController.text,
                               description: descriptionController.text,
+                              category: categoryController.text,
                               quantity: int.parse(quantityController.text),
                               cost: double.parse(costController.text),
                               createdAt: DateTime.now(),
                             ));
                             titleController.clear();
                             descriptionController.clear();
+                            categoryController.clear();
                             quantityController.clear();
                             costController.clear();
                           });
@@ -135,8 +146,7 @@ class _TodoAppState extends State<TodoApp> {
               child: TextField(
                 controller: searchController,
                 onChanged: (value) {
-                  setState(
-                      () {}); // To trigger the rebuild when search query changes
+                  setState(() {});
                 },
                 decoration: InputDecoration(
                   labelText: 'Search',
@@ -182,6 +192,7 @@ class _TodoAppState extends State<TodoApp> {
                         children: [
                           Text(
                               'Description: ${filteredTodos[index].description}'),
+                          Text('Category: ${filteredTodos[index].category}'),
                           Row(
                             children: [
                               Text(
@@ -249,68 +260,88 @@ class _TodoAppState extends State<TodoApp> {
                                     context: context,
                                     builder: (context) => AlertDialog(
                                       title: Text('Edit Todo'),
-                                      content: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          TextField(
-                                            controller: TextEditingController(
-                                              text: filteredTodos[index].title,
+                                      content: SingleChildScrollView(
+                                        // Make the content scrollable
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            TextField(
+                                              controller: TextEditingController(
+                                                text:
+                                                    filteredTodos[index].title,
+                                              ),
+                                              onChanged: (value) {
+                                                filteredTodos[index].title =
+                                                    value;
+                                              },
+                                              decoration: InputDecoration(
+                                                labelText: 'Title',
+                                              ),
                                             ),
-                                            onChanged: (value) {
-                                              filteredTodos[index].title =
-                                                  value;
-                                            },
-                                            decoration: InputDecoration(
-                                              labelText: 'Title',
+                                            SizedBox(height: 8),
+                                            TextField(
+                                              controller: TextEditingController(
+                                                text: filteredTodos[index]
+                                                    .description,
+                                              ),
+                                              onChanged: (value) {
+                                                filteredTodos[index]
+                                                    .description = value;
+                                              },
+                                              decoration: InputDecoration(
+                                                labelText: 'Description',
+                                              ),
                                             ),
-                                          ),
-                                          SizedBox(height: 8),
-                                          TextField(
-                                            controller: TextEditingController(
-                                              text: filteredTodos[index]
-                                                  .description,
+                                            SizedBox(height: 8),
+                                            TextField(
+                                              controller: TextEditingController(
+                                                text: filteredTodos[index]
+                                                    .category,
+                                              ),
+                                              onChanged: (value) {
+                                                filteredTodos[index].category =
+                                                    value;
+                                              },
+                                              decoration: InputDecoration(
+                                                labelText: 'Category',
+                                              ),
                                             ),
-                                            onChanged: (value) {
-                                              filteredTodos[index].description =
-                                                  value;
-                                            },
-                                            decoration: InputDecoration(
-                                              labelText: 'Description',
+                                            SizedBox(height: 8),
+                                            TextField(
+                                              controller: TextEditingController(
+                                                text: filteredTodos[index]
+                                                    .quantity
+                                                    .toString(),
+                                              ),
+                                              onChanged: (value) {
+                                                filteredTodos[index].quantity =
+                                                    int.parse(value);
+                                              },
+                                              keyboardType:
+                                                  TextInputType.number,
+                                              decoration: InputDecoration(
+                                                labelText: 'Quantity',
+                                              ),
                                             ),
-                                          ),
-                                          SizedBox(height: 8),
-                                          TextField(
-                                            controller: TextEditingController(
-                                              text: filteredTodos[index]
-                                                  .quantity
-                                                  .toString(),
+                                            SizedBox(height: 8),
+                                            TextField(
+                                              controller: TextEditingController(
+                                                text: filteredTodos[index]
+                                                    .cost
+                                                    .toString(),
+                                              ),
+                                              onChanged: (value) {
+                                                filteredTodos[index].cost =
+                                                    double.parse(value);
+                                              },
+                                              keyboardType:
+                                                  TextInputType.number,
+                                              decoration: InputDecoration(
+                                                labelText: 'Cost',
+                                              ),
                                             ),
-                                            onChanged: (value) {
-                                              filteredTodos[index].quantity =
-                                                  int.parse(value);
-                                            },
-                                            keyboardType: TextInputType.number,
-                                            decoration: InputDecoration(
-                                              labelText: 'Quantity',
-                                            ),
-                                          ),
-                                          SizedBox(height: 8),
-                                          TextField(
-                                            controller: TextEditingController(
-                                              text: filteredTodos[index]
-                                                  .cost
-                                                  .toString(),
-                                            ),
-                                            onChanged: (value) {
-                                              filteredTodos[index].cost =
-                                                  double.parse(value);
-                                            },
-                                            keyboardType: TextInputType.number,
-                                            decoration: InputDecoration(
-                                              labelText: 'Cost',
-                                            ),
-                                          ),
-                                        ],
+                                          ],
+                                        ),
                                       ),
                                       actions: [
                                         TextButton(
@@ -338,10 +369,8 @@ class _TodoAppState extends State<TodoApp> {
                                 icon: Icon(Icons.remove),
                                 onPressed: () {
                                   setState(() {
-                                    filteredTodos[index].quantity =
-                                        filteredTodos[index].quantity > 0
-                                            ? filteredTodos[index].quantity - 1
-                                            : 0;
+                                    todos.remove(filteredTodos[
+                                        index]); // Remove from todos list
                                   });
                                 },
                               ),
@@ -376,7 +405,8 @@ class _TodoAppState extends State<TodoApp> {
                               TextButton(
                                 onPressed: () {
                                   setState(() {
-                                    filteredTodos.removeAt(index);
+                                    todos.remove(filteredTodos[
+                                        index]); // Remove from todos list
                                     Navigator.of(context).pop();
                                   });
                                 },
