@@ -374,8 +374,8 @@ class _TodoAppState extends State<TodoApp> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Delete Todo'),
-        content: Text('Do you want to delete this todo?'),
+        title: Text('Delete Item'),
+        content: Text('Do you want to delete this item?'),
         actions: [
           TextButton(
             onPressed: () {
