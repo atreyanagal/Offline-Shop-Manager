@@ -191,7 +191,6 @@ class _TodoAppState extends State<TodoApp> {
                                         builder: (context) => AlertDialog(
                                           title: Text('Edit Todo'),
                                           content: SingleChildScrollView(
-                                            // Make the content scrollable
                                             child: Column(
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
@@ -345,7 +344,7 @@ class _TodoAppState extends State<TodoApp> {
                                     onPressed: () {
                                       setState(() {
                                         todos.remove(filteredTodos[
-                                            index]); // Remove from todos list
+                                            index]);
                                         Navigator.of(context).pop();
                                       });
                                     },
@@ -464,7 +463,6 @@ class _AddItemPageState extends State<AddItemPage> {
             SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
-                // Create a new Todo instance with the provided data
                 final newItem = Todo(
                   title: title,
                   description: description,
@@ -473,9 +471,7 @@ class _AddItemPageState extends State<AddItemPage> {
                   cost: cost,
                   createdAt: DateTime.now(),
                 );
-                // Call the addItem callback to add the new item
                 widget.addItem(newItem);
-                // Close the dialog
                 Navigator.of(context).pop();
               },
               child: Text('Add'),
