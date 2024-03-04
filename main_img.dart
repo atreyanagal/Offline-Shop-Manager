@@ -756,6 +756,7 @@ class _EditItemPageState extends State<EditItemPage> {
           cost: cost,
           createdAt: widget.todo.createdAt,
           dueDate: widget.todo.dueDate,
+          imagePath: imagePath,
         );
         widget.editItem(updatedItem);
         Navigator.of(context).pop();
