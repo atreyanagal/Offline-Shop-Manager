@@ -496,7 +496,7 @@ class _AddItemPageState extends State<AddItemPage> {
   late String category;
   late int quantity;
   late double cost;
-  late String? imagePath;
+  late String imagePath = '';
 
   @override
   Widget build(BuildContext context) {
@@ -532,6 +532,11 @@ class _AddItemPageState extends State<AddItemPage> {
             cost = double.tryParse(value) ?? 0.0;
           }, keyboardType: TextInputType.number),
           buildAddImageButton(),
+          if (imagePath != null)
+            Text(
+              '${imagePath!.split('/').last}',
+              style: TextStyle(fontSize: 16),
+            ),
           buildAddButton(),
         ],
       ),
@@ -636,7 +641,7 @@ class _EditItemPageState extends State<EditItemPage> {
   late String category;
   late int quantity;
   late double cost;
-  late String? imagePath;
+  late String imagePath = '';
 
   @override
   void initState() {
@@ -646,7 +651,7 @@ class _EditItemPageState extends State<EditItemPage> {
     category = widget.todo.category;
     quantity = widget.todo.quantity;
     cost = widget.todo.cost;
-    imagePath = widget.todo.imagePath;
+    imagePath = widget.todo.imagePath ?? '';
   }
 
   @override
@@ -682,6 +687,11 @@ class _EditItemPageState extends State<EditItemPage> {
             cost = double.tryParse(value) ?? 0.0;
           }, keyboardType: TextInputType.number),
           buildEditImageButton(),
+          if (imagePath != null)
+            Text(
+              '${imagePath!.split('/').last}',
+              style: TextStyle(fontSize: 16),
+            ),
           buildEditButton(),
         ],
       ),
