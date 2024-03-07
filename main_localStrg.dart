@@ -87,15 +87,13 @@ class _TodoAppState extends State<TodoApp> {
 
   void loadSavedData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> todosJson = prefs.getStringList('todos') ?? [];
-    List<Todo> savedTodos = todosJson
-        .map((todoJson) => Todo.fromJson(json.decode(todoJson)))
-        .toList();
-    // Set the state inside the _TodoAppState class
-    _TodoAppState? state = context.findAncestorStateOfType<_TodoAppState>();
-    if (state != null) {
-      state.setState(() {
-        state.todos = savedTodos;
+    List<String>? todosJson = prefs.getStringList('todos');
+    if (todosJson != null) {
+      List<Todo> savedTodos = todosJson
+          .map((todoJson) => Todo.fromJson(json.decode(todoJson)))
+          .toList();
+      setState(() {
+        todos = savedTodos;
       });
     }
   }
@@ -694,12 +692,11 @@ class _TodoAppState extends State<TodoApp> {
   // Adds a new todo item to the list
   void _addItem(Todo newItem) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> todosJson = prefs.getStringList('todos') ?? [];
-    todosJson.add(json.encode(newItem.toJson()));
+    todos.add(newItem);
+    List<String> todosJson =
+        todos.map((todo) => json.encode(todo.toJson())).toList();
     await prefs.setStringList('todos', todosJson);
-    setState(() {
-      todos.add(newItem);
-    });
+    setState(() {});
   }
 
   // Formats a DateTime object into a string
