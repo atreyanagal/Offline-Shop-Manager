@@ -227,7 +227,8 @@ class _TodoAppState extends State<TodoApp> {
           navigateToEditItemPage(filteredTodos[index]);
         },
         onLongPress: () {
-          showDeleteConfirmationDialog(filteredTodos, index);
+          showDeleteConfirmationDialog(
+              context, _currentTheme, filteredTodos, index);
         },
       ),
     );
@@ -534,29 +535,64 @@ class _TodoAppState extends State<TodoApp> {
   }
 
   // Shows a dialog to confirm deletion of a todo item
-  void showDeleteConfirmationDialog(List<Todo> filteredTodos, int index) {
+  void showDeleteConfirmationDialog(BuildContext context, ThemeData theme,
+      List<Todo> filteredTodos, int index) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Delete Item'),
-        content: Text('Do you want to delete this item?'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              setState(() {
-                todos.remove(filteredTodos[index]);
-                Navigator.of(context).pop();
-              });
-            },
-            child: Text('Yes'),
+        title: Text('Delete Item',
+            style: TextStyle(
+                color: theme.brightness == Brightness.light
+                    ? Colors.black
+                    : Colors
+                        .white)), // Apply text color based on theme brightness
+        backgroundColor: theme.brightness == Brightness.light
+            ? Colors.white
+            : Colors.black, // Apply background color based on theme brightness
+        content: Container(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Do you want to delete this item?',
+                  style: TextStyle(
+                      color: theme.brightness == Brightness.light
+                          ? Colors.black
+                          : Colors
+                              .white)), // Apply text color based on theme brightness
+              SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      setState(() {
+                        todos.remove(filteredTodos[index]);
+                        Navigator.of(context).pop();
+                      });
+                    },
+                    child: Text('Yes',
+                        style: TextStyle(
+                            color: theme.brightness == Brightness.light
+                                ? Colors.red
+                                : Colors
+                                    .white)), // Apply text color based on theme brightness
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('No',
+                        style: TextStyle(
+                            color: theme.brightness == Brightness.light
+                                ? theme.primaryColor
+                                : Colors
+                                    .white)), // Apply text color based on theme brightness
+                  ),
+                ],
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: Text('No'),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -686,19 +722,24 @@ class _AddItemPageState extends State<AddItemPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Select Image Source'),
+        backgroundColor:
+            widget.theme.dialogBackgroundColor, // Apply background color here
+        title: Text('Select Image Source',
+            style: widget.theme.textTheme.headline6),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              title: Text('From Camera'),
+              title:
+                  Text('From Camera', style: widget.theme.textTheme.headline6),
               onTap: () {
                 Navigator.of(context).pop();
                 _getImage(ImageSource.camera);
               },
             ),
             ListTile(
-              title: Text('From Gallery'),
+              title:
+                  Text('From Gallery', style: widget.theme.textTheme.headline6),
               onTap: () {
                 Navigator.of(context).pop();
                 _getImage(ImageSource.gallery);
@@ -847,19 +888,24 @@ class _EditItemPageState extends State<EditItemPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Select Image Source'),
+        backgroundColor:
+            widget.theme.dialogBackgroundColor, // Apply background color here
+        title: Text('Select Image Source',
+            style: widget.theme.textTheme.headline6),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              title: Text('From Camera'),
+              title:
+                  Text('From Camera', style: widget.theme.textTheme.headline6),
               onTap: () {
                 Navigator.of(context).pop();
                 _getImage(ImageSource.camera);
               },
             ),
             ListTile(
-              title: Text('From Gallery'),
+              title:
+                  Text('From Gallery', style: widget.theme.textTheme.headline6),
               onTap: () {
                 Navigator.of(context).pop();
                 _getImage(ImageSource.gallery);
