@@ -901,8 +901,7 @@ class _EditItemPageState extends State<EditItemPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor:
-            widget.theme.dialogBackgroundColor, // Apply background color here
+        backgroundColor: widget.theme.dialogBackgroundColor,
         title: Text('Select Image Source',
             style: widget.theme.textTheme.headline6),
         content: Column(
@@ -922,6 +921,16 @@ class _EditItemPageState extends State<EditItemPage> {
               onTap: () {
                 Navigator.of(context).pop();
                 _getImage(ImageSource.gallery);
+              },
+            ),
+            ListTile(
+              title:
+                  Text('Remove Image', style: widget.theme.textTheme.headline6),
+              onTap: () {
+                Navigator.of(context).pop();
+                setState(() {
+                  imagePath = ''; // Clear the image path
+                });
               },
             ),
           ],
