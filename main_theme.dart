@@ -80,26 +80,38 @@ class _TodoAppState extends State<TodoApp> {
           centerTitle: true,
         ),
         drawer: Drawer(
-          child: ListView(
-            padding: EdgeInsets.zero,
+          child: Column(
             children: <Widget>[
-              DrawerHeader(
-                padding: EdgeInsets.only(top: 16.0, left: 16.0, bottom: 8.0),
-                child: Text('Settings',
-                    style: TextStyle(fontSize: 20, color: Colors.white)),
-                decoration: BoxDecoration(
-                  color: _currentTheme == ThemeData.light()
-                      ? Colors.blue
-                      : Theme.of(context).primaryColor,
+              Expanded(
+                child: ListView(
+                  padding: EdgeInsets.zero,
+                  children: <Widget>[
+                    DrawerHeader(
+                      padding:
+                          EdgeInsets.only(top: 16.0, left: 16.0, bottom: 8.0),
+                      child: Text('Settings',
+                          style: TextStyle(fontSize: 20, color: Colors.white)),
+                      decoration: BoxDecoration(
+                        color: _currentTheme == ThemeData.light()
+                            ? Colors.blue
+                            : Theme.of(context).primaryColor,
+                      ),
+                    ),
+                    ListTile(
+                      title: Text('Toggle Theme'),
+                      onTap: () {
+                        setState(() {
+                          _toggleTheme(); // Call _toggleTheme within setState
+                        });
+                      },
+                    ),
+                  ],
                 ),
               ),
-              ListTile(
-                title: Text('Toggle Theme'),
-                onTap: () {
-                  setState(() {
-                    _toggleTheme(); // Call _toggleTheme within setState
-                  });
-                },
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text('Built By ATREY',
+                    style: TextStyle(fontSize: 12, color: Colors.red)),
               ),
             ],
           ),
