@@ -318,27 +318,33 @@ class _TodoAppState extends State<TodoApp> {
               },
             ),
             IconButton(
-              icon: Icon(Icons.image_outlined), // Changed from Icons.edit
+              icon: Icon(Icons.image_outlined),
               onPressed: () {
-                // Display uploaded image
-                if (filteredTodos[index].imagePath != null) {
-                  showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: Text('Uploaded Image'),
-                      content:
-                          Image.file(File(filteredTodos[index].imagePath!)),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: Text('Close'),
-                        ),
-                      ],
-                    ),
-                  );
-                }
+                // Display uploaded image or 'No image uploaded' text
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: Text('Uploaded Image'),
+                    content: filteredTodos[index].imagePath != null &&
+                            filteredTodos[index].imagePath!.isNotEmpty
+                        ? Image.file(File(filteredTodos[index].imagePath!))
+                        : Text('No image uploaded for this item.'),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text('Close'),
+                      ),
+                    ],
+                    backgroundColor: _currentTheme.dialogBackgroundColor,
+                    // Apply dialog background color based on current theme
+                    titleTextStyle: _currentTheme.textTheme.headline6,
+                    // Apply text style for title based on current theme
+                    contentTextStyle: _currentTheme.textTheme.bodyText1,
+                    // Apply text style for content based on current theme
+                  ),
+                );
               },
             ),
             IconButton(
