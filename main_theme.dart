@@ -253,16 +253,18 @@ class _TodoAppState extends State<TodoApp> {
     );
   }
 
-  void updateTodoItem(Todo oldItem, Todo editedItem) {
+  void updateTodoItem(Todo editedItem) {
     setState(() {
-      final index = todos.indexOf(oldItem);
+      final index = todos.indexWhere((todo) =>
+          todo.title ==
+          editedItem.title); // Assuming title is unique for each Todo
       if (index != -1) {
-        int quantityDifference = editedItem.quantity - oldItem.quantity;
+        int quantityDifference = editedItem.quantity - todos[index].quantity;
 
         // If quantity is reduced, update the sales till now
         if (quantityDifference < 0) {
           double salesAmount = editedItem.cost *
-              (quantityDifference); // Absolute value of the difference
+              quantityDifference.abs(); // Absolute value of the difference
           totalSales -= salesAmount; // Subtract from total sales
         }
 
@@ -277,9 +279,8 @@ class _TodoAppState extends State<TodoApp> {
       MaterialPageRoute(
         builder: (context) => EditItemPage(
           todo: todo,
-          editItem: (editedItem) {
-            updateTodoItem(todo, editedItem);
-          },
+          editItem: updateTodoItem,
+          theme: _currentTheme, // Pass the current theme
         ),
       ),
     );
@@ -563,7 +564,10 @@ class _TodoAppState extends State<TodoApp> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => AddItemPage(addItem: _addItem),
+        builder: (context) => AddItemPage(
+          addItem: _addItem,
+          theme: _currentTheme, // Pass the current theme
+        ),
       ),
     );
   }
@@ -584,8 +588,10 @@ class _TodoAppState extends State<TodoApp> {
 // Widget for adding a new todo item
 class AddItemPage extends StatefulWidget {
   final Function(Todo) addItem;
+  final ThemeData theme;
 
-  const AddItemPage({Key? key, required this.addItem}) : super(key: key);
+  const AddItemPage({Key? key, required this.addItem, required this.theme})
+      : super(key: key);
 
   @override
   _AddItemPageState createState() => _AddItemPageState();
@@ -601,11 +607,14 @@ class _AddItemPageState extends State<AddItemPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Add Item'),
+    return Theme(
+      data: widget.theme,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Add Item'),
+        ),
+        body: buildAddItemForm(),
       ),
-      body: buildAddItemForm(),
     );
   }
 
@@ -727,9 +736,15 @@ class _AddItemPageState extends State<AddItemPage> {
 
 class EditItemPage extends StatefulWidget {
   final Todo todo;
-  final Function(Todo) editItem;
+  final void Function(Todo)
+      editItem; // Ensure editItem accepts only one Todo argument
+  final ThemeData theme;
 
-  const EditItemPage({Key? key, required this.todo, required this.editItem})
+  const EditItemPage(
+      {Key? key,
+      required this.todo,
+      required this.editItem,
+      required this.theme})
       : super(key: key);
 
   @override
@@ -757,11 +772,14 @@ class _EditItemPageState extends State<EditItemPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Edit Item'),
+    return Theme(
+      data: widget.theme,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Edit Item'),
+        ),
+        body: buildEditItemForm(),
       ),
-      body: buildEditItemForm(),
     );
   }
 
