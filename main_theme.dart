@@ -598,12 +598,19 @@ class _TodoAppState extends State<TodoApp> {
   }
 
   // Shows a date picker dialog to select due date for a todo item
+  // Shows a date picker dialog to select due date for a todo item
   Future<void> showDatePickerDialog(List<Todo> filteredTodos, int index) async {
     final selectedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime.now(),
       lastDate: DateTime(DateTime.now().year + 5),
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: _currentTheme,
+          child: child ?? Container(),
+        );
+      },
     );
     if (selectedDate != null) {
       setState(() {
