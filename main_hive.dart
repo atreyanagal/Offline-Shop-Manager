@@ -8,10 +8,51 @@ void main() async {
   Hive.registerAdapter(TodoAdapter());
 
   runApp(MaterialApp(
-    home: TodoApp(),
+    home: SplashScreen(),
     theme: ThemeData.light(),
     darkTheme: ThemeData.dark(),
   ));
+}
+
+class SplashScreen extends StatefulWidget {
+  @override
+  _SplashScreenState createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // After 2 seconds, navigate to the TodoApp
+    Future.delayed(Duration(seconds: 2), () {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => TodoApp(),
+        ),
+      );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Get the current theme
+    final currentTheme = Theme.of(context);
+
+    return Scaffold(
+      backgroundColor: Colors.white, // Set background color to white
+      body: Center(
+        child: Text(
+          'Welcome to Offline Store Manager App',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 24,
+            color: currentTheme.primaryColor, // Use primary color of the theme
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 // Model class for a Todo item
