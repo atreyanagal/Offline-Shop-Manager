@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
   Hive.registerAdapter(TodoAdapter());
 
   runApp(MaterialApp(
     home: SplashScreen(),
-    theme: ThemeData.light(),
-    darkTheme: ThemeData.dark(),
   ));
 }
 
@@ -36,23 +36,39 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Get the current theme
-    final currentTheme = Theme.of(context);
-
     return Scaffold(
-      backgroundColor: Colors.white, // Set background color to white
       body: Center(
         child: Text(
           'Welcome to Offline Store Manager App',
-          textAlign: TextAlign.center,
+          textAlign: TextAlign.center, // Align text in center horizontally
           style: TextStyle(
-            fontSize: 24,
-            color: currentTheme.primaryColor, // Use primary color of the theme
+            fontSize: 24, // Font size 24
+            color: Colors.lightBlue, // Light blue font color
           ),
         ),
       ),
     );
   }
+}
+
+@override
+Widget build(BuildContext context) {
+  // Get the current theme
+  final currentTheme = Theme.of(context);
+
+  return Scaffold(
+    backgroundColor: Colors.white, // Set background color to white
+    body: Center(
+      child: Text(
+        'Welcome to Offline Store Manager App',
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          fontSize: 24,
+          color: currentTheme.primaryColor, // Use primary color of the theme
+        ),
+      ),
+    ),
+  );
 }
 
 // Model class for a Todo item
@@ -137,6 +153,7 @@ class _TodoAppState extends State<TodoApp> {
       _currentTheme = _currentTheme == ThemeData.light()
           ? ThemeData.dark()
           : ThemeData.light();
+      _saveTheme(_currentTheme == ThemeData.dark());
     });
   }
 
@@ -148,6 +165,21 @@ class _TodoAppState extends State<TodoApp> {
   void initState() {
     super.initState();
     _openBox();
+    _loadTheme();
+  }
+
+  Future<void> _loadTheme() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _currentTheme = prefs.getBool('isDarkTheme') ?? false
+          ? ThemeData.dark()
+          : ThemeData.light();
+    });
+  }
+
+  Future<void> _saveTheme(bool isDark) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isDarkTheme', isDark);
   }
 
   Future<void> _openBox() async {
