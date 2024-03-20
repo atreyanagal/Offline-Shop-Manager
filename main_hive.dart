@@ -742,7 +742,6 @@ class _TodoAppState extends State<TodoApp> {
   }
 
   // Shows a date picker dialog to select due date for a todo item
-  // Shows a date picker dialog to select due date for a todo item
   Future<void> showDatePickerDialog(List<Todo> filteredTodos, int index) async {
     final selectedDate = await showDatePicker(
       context: context,
@@ -759,6 +758,9 @@ class _TodoAppState extends State<TodoApp> {
     if (selectedDate != null) {
       setState(() {
         filteredTodos[index].dueDate = selectedDate;
+
+        var todosBox = Hive.box<Todo>('todos');
+        todosBox.putAt(index, filteredTodos[index]);
       });
     }
   }
