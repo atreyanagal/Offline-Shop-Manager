@@ -638,7 +638,11 @@ class _TodoAppState extends State<TodoApp> {
     ];
   }
 
-  void decrementTodoQuantity(List<Todo> filteredTodos, int index) {
+  Future<void> decrementTodoQuantity(
+      List<Todo> filteredTodos, int index) async {
+    await Hive.openBox<Todo>('todos'); // Ensure the box is open
+    var todosBox = Hive.box<Todo>('todos');
+
     setState(() {
       if (filteredTodos[index].quantity > 0) {
         // Calculate and update sales
@@ -648,21 +652,28 @@ class _TodoAppState extends State<TodoApp> {
                 filteredTodos[index].cost;
         totalSales += salesAmount;
 
+        // Update quantity and save to Hive
         filteredTodos[index].quantity = decreasedQuantity;
+        todosBox.putAt(index, filteredTodos[index]);
       }
     });
   }
 
 // Increments the quantity of a todo item
-  void incrementTodoQuantity(List<Todo> filteredTodos, int index) {
+  Future<void> incrementTodoQuantity(
+      List<Todo> filteredTodos, int index) async {
+    await Hive.openBox<Todo>('todos'); // Ensure the box is open
+    var todosBox = Hive.box<Todo>('todos');
+
     setState(() {
       // Calculate and update sales for increased quantity
       double salesAmount = filteredTodos[index].cost *
           (filteredTodos[index].quantity + 1 - filteredTodos[index].quantity);
       totalSales -= salesAmount;
 
-      // Increase quantity
+      // Increase quantity and save to Hive
       filteredTodos[index].quantity++;
+      todosBox.putAt(index, filteredTodos[index]);
     });
   }
 
