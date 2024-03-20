@@ -277,7 +277,7 @@ class _TodoAppState extends State<TodoApp> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Sales Till Now: ₹${totalSales >= 0 ? totalSales.abs().toStringAsFixed(2) : '0.00'}',
+              'Sales Till Now: ₹${salesTillNow >= 0 ? salesTillNow.abs().toStringAsFixed(2) : '0.00'}',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             // Reset button
@@ -302,7 +302,10 @@ class _TodoAppState extends State<TodoApp> {
 
 // Calculate total sales till now
   double calculateSalesTillNow() {
-    return totalSales;
+  double currentNetWorth = calculateNetWorth();
+  double netWorthChange = currentNetWorth - calculateNetWorth();
+  double salesTillNow = totalSales - netWorthChange;
+  return salesTillNow;
   }
 
   // Builds the search bar
@@ -410,7 +413,7 @@ class _TodoAppState extends State<TodoApp> {
               quantityDifference.abs(); // Absolute value of the difference
           totalSales -= salesAmount; // Subtract from total sales
         }
-
+        Hive.openBox<Todo>('todos');
         todos[index] = editedItem;
         _todoBox.putAt(index, editedItem);
       }
